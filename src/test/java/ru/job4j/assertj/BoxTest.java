@@ -52,14 +52,14 @@ class BoxTest {
 
     @Test
     void whenShapeIsKnown() {
-        Box box = new Box (0, 2);
+        Box box = new Box(0, 2);
         boolean isShapeExist = box.isExist();
         assertThat(isShapeExist).isTrue();
     }
 
     @Test
     void whenCubeAreaIsTwentyFour() {
-        Box box = new Box (8, 2);
+        Box box = new Box(8, 2);
         double area = box.getArea();
         assertThat(area).isEqualTo(24)
                 .isNotNull()
@@ -69,7 +69,7 @@ class BoxTest {
 
     @Test
     void whenSphereAreaIsInfinite() {
-        Box box = new Box (0, 2);
+        Box box = new Box(0, 2);
         double area = box.getArea();
         assertThat(area).isCloseTo(50, withPrecision(0.5d))
                 .isNotNull()
