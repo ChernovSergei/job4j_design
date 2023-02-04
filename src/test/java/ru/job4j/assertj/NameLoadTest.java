@@ -16,7 +16,7 @@ class NameLoadTest {
     @Test
     void doesntContainEqualMark() {
         NameLoad nameLoad = new NameLoad();
-        String names[] = {"2=Rose", "3:Camomile", "1=Dahlia"};
+        String[] names = {"2=Rose", "3:Camomile", "1=Dahlia"};
         assertThatThrownBy(() -> nameLoad.parse(names))
                 .hasMessageContaining("symbol \"=\"")
                 .hasMessageContaining(names[1])
@@ -28,7 +28,7 @@ class NameLoadTest {
     @Test
     void doesntContainAKey() {
          NameLoad nameLoad = new NameLoad();
-        String names[] = {"=Rose", "3=Camomile", "1=Dahlia"};
+        String[] names = {"=Rose", "3=Camomile", "1=Dahlia"};
         assertThatThrownBy(() -> nameLoad.parse(names))
                 .hasMessageContaining("key")
                 .hasMessageContaining(names[0])
@@ -40,7 +40,7 @@ class NameLoadTest {
     @Test
     void doesntContainAValue() {
          NameLoad nameLoad = new NameLoad();
-        String names[] = {"2=Rose", "3=Camomile", "1="};
+        String[] names = {"2=Rose", "3=Camomile", "1="};
         assertThatThrownBy(() -> nameLoad.parse(names))
                 .hasMessageStartingWith("this")
                 .hasMessageContaining(names[2])
