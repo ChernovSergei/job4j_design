@@ -127,7 +127,7 @@ public class SimpleArrayListTest {
     @Test
     void whenGetIteratorFromEmptyListThenNextThrowException() {
         list = new SimpleArrayList<>(5);
-        assertThatThrownBy(list.iterator()::next).isInstanceOf(IndexOutOfBoundsException.class);
+        assertThatThrownBy(list.iterator()::next).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test

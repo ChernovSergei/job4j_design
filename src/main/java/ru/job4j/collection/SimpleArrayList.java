@@ -5,15 +5,13 @@ import java.util.*;
 public class SimpleArrayList<T> implements SimpleList<T> {
 
     private T[] container;
-    private int size;
+    private int size = 0;
     private int modCount = 0;
-    private int pointer = 0;
     private Iterator<T> it = iterator();
 
-    private T[] arrayExpansion() {
+    private void arrayExpansion() {
         int newCapacity = (container.length == 0) ? 1 : container.length * 2;
         container = Arrays.copyOf(container, newCapacity);
-        return container;
     }
 
     public SimpleArrayList(int capacity) {
@@ -26,28 +24,25 @@ public class SimpleArrayList<T> implements SimpleList<T> {
             arrayExpansion();
         }
 
-        container[pointer] = value;
+        container[size] = value;
         size++;
         it.next();
+        modCount++;
     }
 
     @Override
     public T set(int index, T newValue) {
         Objects.checkIndex(index, size);
 
-        T oldValue = container[index];
+        T originalValue = container[index];
         container[index] = newValue;
 
-        if (size  == container.length) {
-            arrayExpansion();
-        }
-        return oldValue;
+        return originalValue;
     }
 
     @Override
     public T remove(int index) {
         Objects.checkIndex(index, size);
-
         T removedElement = get(index);
 
         System.arraycopy(
@@ -55,12 +50,12 @@ public class SimpleArrayList<T> implements SimpleList<T> {
                 index + 1,
                 container,
                 index,
-                container.length - index - 1
+                container.length - 2
         );
 
-        pointer = index;
         size--;
-        it.next();
+        container[size] = null;
+        modCount++;
 
         return removedElement;
     }
@@ -79,30 +74,28 @@ public class SimpleArrayList<T> implements SimpleList<T> {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<T>() {
-            private int subPointer = 0;
-            private int subSize = 0;
             private int subModCount = modCount;
+            private int pointer = 0;
 
-            @Override
-            public boolean hasNext() {
+            private void checkConcurrent() {
                 if (subModCount != modCount) {
                     throw new ConcurrentModificationException();
                 }
-                return subPointer < container.length && size > 0;
+            }
+
+            @Override
+            public boolean hasNext() {
+                if (pointer + 1 != size) {
+                    checkConcurrent();
+                }
+                return pointer < size;
             }
 
             @Override
             public T next() {
-                if (subSize > size) {
-                    subPointer = pointer;
-                }
                 if (!hasNext()) {
-                    throw new IndexOutOfBoundsException();
+                    throw new NoSuchElementException();
                 }
-
-                subSize = size;
-                modCount = ++subModCount;
-                pointer = subPointer++;
 
                 return container[pointer++];
             }
