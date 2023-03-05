@@ -6,13 +6,6 @@ public class SimpleArrayList<T> implements SimpleList<T> {
     private T[] container;
     private int size = 0;
     private int modCount = 0;
-    private Iterator<T> it;
-
-    private void arrayExpansion() {
-        int newCapacity = (container.length == 0) ? 1 : container.length * 2;
-        container = Arrays.copyOf(container, newCapacity);
-        it = iterator();
-    }
 
     public SimpleArrayList(int capacity) {
         this.container = (T[]) new Object[capacity];
@@ -25,6 +18,12 @@ public class SimpleArrayList<T> implements SimpleList<T> {
         }
         container[size++] = value;
         modCount++;
+    }
+
+    private void arrayExpansion() {
+        int newCapacity = (container.length == 0) ? 1 : container.length * 2;
+        container = Arrays.copyOf(container, newCapacity);
+        Iterator<T> it = iterator();
     }
 
     @Override
@@ -44,7 +43,6 @@ public class SimpleArrayList<T> implements SimpleList<T> {
                 index,
                 container.length - index - 1
         );
-
         size--;
         container[size] = null;
         modCount++;
@@ -67,7 +65,6 @@ public class SimpleArrayList<T> implements SimpleList<T> {
         return new Iterator<T>() {
             private int subModCount = modCount;
             private int pointer = 0;
-
             @Override
             public boolean hasNext() {
                 if (subModCount != modCount) {
@@ -81,7 +78,6 @@ public class SimpleArrayList<T> implements SimpleList<T> {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-
                 return container[pointer++];
             }
         };
