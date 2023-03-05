@@ -3,15 +3,15 @@ package ru.job4j.collection;
 import java.util.*;
 
 public class SimpleArrayList<T> implements SimpleList<T> {
-
     private T[] container;
     private int size = 0;
     private int modCount = 0;
-    private Iterator<T> it = iterator();
+    private Iterator<T> it;
 
     private void arrayExpansion() {
         int newCapacity = (container.length == 0) ? 1 : container.length * 2;
         container = Arrays.copyOf(container, newCapacity);
+        it = iterator();
     }
 
     public SimpleArrayList(int capacity) {
@@ -23,40 +23,31 @@ public class SimpleArrayList<T> implements SimpleList<T> {
         if (size  == container.length) {
             arrayExpansion();
         }
-
-        container[size] = value;
-        size++;
-        it.next();
+        container[size++] = value;
         modCount++;
     }
 
     @Override
     public T set(int index, T newValue) {
-        Objects.checkIndex(index, size);
-
-        T originalValue = container[index];
+        T originalValue = get(index);
         container[index] = newValue;
-
         return originalValue;
     }
 
     @Override
     public T remove(int index) {
-        Objects.checkIndex(index, size);
         T removedElement = get(index);
-
         System.arraycopy(
                 container,
                 index + 1,
                 container,
                 index,
-                container.length - 2
+                container.length - index - 1
         );
 
         size--;
         container[size] = null;
         modCount++;
-
         return removedElement;
     }
 
@@ -77,16 +68,10 @@ public class SimpleArrayList<T> implements SimpleList<T> {
             private int subModCount = modCount;
             private int pointer = 0;
 
-            private void checkConcurrent() {
-                if (subModCount != modCount) {
-                    throw new ConcurrentModificationException();
-                }
-            }
-
             @Override
             public boolean hasNext() {
-                if (pointer + 1 != size) {
-                    checkConcurrent();
+                if (subModCount != modCount) {
+                    throw new ConcurrentModificationException();
                 }
                 return pointer < size;
             }
