@@ -23,7 +23,6 @@ public class SimpleArrayList<T> implements SimpleList<T> {
     private void arrayExpansion() {
         int newCapacity = (container.length == 0) ? 1 : container.length * 2;
         container = Arrays.copyOf(container, newCapacity);
-        Iterator<T> it = iterator();
     }
 
     @Override
