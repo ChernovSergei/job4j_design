@@ -3,25 +3,27 @@ package ru.job4j.collection;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public class SimpleLinkedList<E> implements LinkedList<E> {
     private int size = 0;
     private int modCount = 0;
     private Node<E> head;
-    private Node<E> node;
 
     public <E> SimpleLinkedList() {
     }
 
     @Override
     public void add(E value) {
-        final Node<E> lastNode = node;
-        final Node<E> newNode = new Node<>(value, lastNode);
-        node = newNode;
-        if (lastNode == null) {
-            head = newNode;
-        } else {
+        final Node<E> newNode = new Node<>(value, null);
+        if (head != null) {
+            Node<E> lastNode = head;
+            while (lastNode.next != null) {
+                lastNode = lastNode.next;
+            }
             lastNode.next = newNode;
+        } else {
+            head = newNode;
         }
         size++;
         modCount++;
@@ -31,9 +33,7 @@ public class SimpleLinkedList<E> implements LinkedList<E> {
     public E get(int index) {
         Node<E> pointer = head;
         int it = 0;
-        if (index >= size) {
-            throw new IndexOutOfBoundsException();
-        }
+        Objects.checkIndex(index, size);
         while (it != index) {
             pointer = pointer.next;
             it++;
@@ -44,30 +44,26 @@ public class SimpleLinkedList<E> implements LinkedList<E> {
     @Override
     public Iterator<E> iterator() {
         return new Iterator<E>() {
-            private int position = 0;
-            private Node<E> pointer = null;
+            private Node<E> pointer = head;
             private int expectedModCount = modCount;
 
             @Override
             public boolean hasNext() {
-                return position < size;
+                if (expectedModCount != modCount) {
+                    throw new ConcurrentModificationException();
+                }
+                return pointer != null;
             }
 
             @Override
             public E next() {
+                E result;
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                if (expectedModCount != modCount) {
-                    throw new ConcurrentModificationException();
-                }
-                if (pointer == null) {
-                    pointer = head;
-                } else {
-                    pointer = pointer.next;
-                }
-                position++;
-                return pointer.item;
+                result = pointer.item;
+                pointer = pointer.next;
+                return result;
             }
         };
     }
