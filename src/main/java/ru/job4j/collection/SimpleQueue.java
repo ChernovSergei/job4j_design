@@ -1,16 +1,25 @@
 package ru.job4j.collection;
 
+import java.util.NoSuchElementException;
+
 public class SimpleQueue<T> {
     private final SimpleStack<T> in = new SimpleStack<>();
     private final SimpleStack<T> out = new SimpleStack<>();
     private int numberOfPlates = 0;
     private boolean directionSwitch = true;
 
+    private void platesMover(SimpleStack<T> first, SimpleStack<T> second) {
+        for (int i = 0; i < numberOfPlates; i++) {
+            first.push(second.poll());
+        }
+    }
+
     public T poll() {
+        if (numberOfPlates == 0) {
+            throw new NoSuchElementException();
+        }
         if (!directionSwitch) {
-            for (int i = 0; i < numberOfPlates; i++) {
-                out.push(in.poll());
-            }
+            platesMover(out, in);
         }
         numberOfPlates--;
         directionSwitch = true;
@@ -19,9 +28,7 @@ public class SimpleQueue<T> {
 
     public void push(T value) {
         if (directionSwitch) {
-            for (int i = 0; i < numberOfPlates; i++) {
-                in.push(out.poll());
-            }
+            platesMover(in, out);
         }
         in.push(value);
         directionSwitch = false;
