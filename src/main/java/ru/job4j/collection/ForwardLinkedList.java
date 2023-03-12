@@ -14,14 +14,7 @@ public class ForwardLinkedList<E> implements Iterable<E> {
     }
 
     public void addFirst(E value) {
-        final Node<E> newNode = new Node<>(value, null);
-        if (head != null) {
-            Node<E> firstNode = newNode;
-            firstNode.next = head;
-            head = firstNode;
-        } else {
-            head = newNode;
-        }
+        head = new Node<>(value, head);
         size++;
         modCount++;
     }
