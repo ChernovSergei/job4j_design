@@ -3,7 +3,7 @@ package ru.job4j.collection;
 public class SimpleStack<T> {
     private ForwardLinkedList<T> list = new ForwardLinkedList<>();
 
-    public T pop() {
+    public T poll() {
         return list.deleteFirst();
     }
 

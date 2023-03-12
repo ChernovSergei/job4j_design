@@ -20,21 +20,21 @@ public class SimpleStackTest {
     void whenPushThenPoll() {
         stack.push(3);
         stack.push(4);
-        assertThat(stack.pop()).isEqualTo(4);
+        assertThat(stack.poll()).isEqualTo(4);
     }
 
     @Test
     void whenPushPollThenPushPoll() {
-        stack.pop();
+        stack.poll();
         stack.push(3);
-        assertThat(stack.pop()).isEqualTo(3);
+        assertThat(stack.poll()).isEqualTo(3);
     }
 
     @Test
     void whenPushPushThenPollPoll() {
-        stack.pop();
-        assertThat(stack.pop()).isEqualTo(1);
-        assertThatThrownBy(stack::pop)
+        stack.poll();
+        assertThat(stack.poll()).isEqualTo(1);
+        assertThatThrownBy(stack::poll)
                 .isInstanceOf(NoSuchElementException.class);
     }
 }
