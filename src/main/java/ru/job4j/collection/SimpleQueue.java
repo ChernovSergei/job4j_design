@@ -13,7 +13,7 @@ public class SimpleQueue<T> {
             throw new NoSuchElementException();
         }
         if (numberOfOutPlates == 0) {
-            for(int i = 0; i < numberOfInputPlates; i++) {
+            for (int i = 0; i < numberOfInputPlates; i++) {
                 out.push(in.poll());
                 numberOfOutPlates++;
             }
