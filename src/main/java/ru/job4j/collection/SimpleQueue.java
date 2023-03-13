@@ -5,33 +5,26 @@ import java.util.NoSuchElementException;
 public class SimpleQueue<T> {
     private final SimpleStack<T> in = new SimpleStack<>();
     private final SimpleStack<T> out = new SimpleStack<>();
-    private int numberOfPlates = 0;
-    private boolean directionSwitch = true;
-
-    private void platesMover(SimpleStack<T> first, SimpleStack<T> second) {
-        for (int i = 0; i < numberOfPlates; i++) {
-            first.push(second.poll());
-        }
-    }
+    private int numberOfOutPlates = 0;
+    private int numberOfInputPlates = 0;
 
     public T poll() {
-        if (numberOfPlates == 0) {
+        if (numberOfInputPlates + numberOfOutPlates == 0) {
             throw new NoSuchElementException();
         }
-        if (!directionSwitch) {
-            platesMover(out, in);
+        if (numberOfOutPlates == 0) {
+            for(int i = 0; i < numberOfInputPlates; i++) {
+                out.push(in.poll());
+                numberOfOutPlates++;
+            }
+            numberOfInputPlates = 0;
         }
-        numberOfPlates--;
-        directionSwitch = true;
+        numberOfOutPlates--;
         return out.poll();
     }
 
     public void push(T value) {
-        if (directionSwitch) {
-            platesMover(in, out);
-        }
+        numberOfInputPlates++;
         in.push(value);
-        directionSwitch = false;
-        numberOfPlates++;
     }
 }
