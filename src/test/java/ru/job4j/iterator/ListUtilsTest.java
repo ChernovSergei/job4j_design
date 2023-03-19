@@ -46,7 +46,7 @@ public class ListUtilsTest {
 
     @Test
     void whenReplaceSeveralElemenents() {
-        List<Integer> original = new ArrayList<>(Arrays.asList(9, 2, 1, 4, 3, 6));
+        List<Integer> original = new ArrayList<>(Arrays.asList(9, 3, 2, 1, 4, 1, 3, 6));
         ListUtils.removeAll(original, input);
         assertThat(original).hasSize(4).containsSequence(9, 2, 4, 6);
     }
