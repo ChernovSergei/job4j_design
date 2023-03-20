@@ -9,22 +9,23 @@ public class SimpleSet<T> implements Set<T> {
 
     @Override
     public boolean add(T value) {
-        if (this.contains(value)) {
-            return false;
+        boolean result = !this.contains(value);
+        if (result) {
+            set.add(value);
         }
-        set.add(value);
-        return true;
+        return result;
     }
 
     @Override
     public boolean contains(T value) {
-        Iterator<T> iterator = set.iterator();
-        while (iterator.hasNext()) {
-            if (Objects.equals(iterator.next(), value)) {
-                return true;
+        boolean result = false;
+        for (int i = 0; i < set.size(); i++) {
+            if (Objects.equals(set.get(i), value)) {
+                result = true;
+                break;
             }
         }
-        return false;
+        return result;
     }
 
     @Override
