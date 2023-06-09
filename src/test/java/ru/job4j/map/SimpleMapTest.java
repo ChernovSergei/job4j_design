@@ -176,4 +176,25 @@ public class SimpleMapTest {
     void whenGetTenthElement() {
         assertThat(map.get(10)).isNull();
     }
+
+    @Test
+    void whenRemoveZeroElement() {
+        map.put(null, "null");
+        assertThat(map.remove(0)).isFalse();
+        assertThat(map.remove(null)).isTrue();
+        map.put(0, "null");
+        assertThat(map.remove(null)).isFalse();
+        assertThat(map.remove(0)).isTrue();
+    }
+
+    @Test
+    void whenGetZeroElement() {
+        map.put(null, "null");
+        assertThat(map.get(0)).isNull();
+        assertThat(map.get(null)).contains("null");
+        map.remove(null);
+        map.put(0, "null");
+        assertThat(map.get(null)).isNull();
+        assertThat(map.get(0)).contains("null");
+    }
 }

@@ -2,7 +2,6 @@ package ru.job4j.map;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import java.lang.Math;
 import java.util.NoSuchElementException;
 
 public class SimpleMap<K, V> implements Map<K, V> {
@@ -14,17 +13,16 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean put(K key, V value) {
-        if (count + 1 > Math.abs((float) capacity * LOAD_FACTOR)) {
+        if (count >= capacity * LOAD_FACTOR) {
             expand();
         }
-        int hash = hash(key == null ? 0 : key.hashCode());
-        int index = indexFor(hash);
-        if (table[index] == null) {
-            table[index] = new MapEntry<>(key, value);
-            count++;
-            return true;
+        int index = getIndex(key);
+        if (table[index] != null) {
+            return false;
         }
-        return false;
+        table[index] = new MapEntry<>(key, value);
+        count++;
+        return true;
     }
 
     private int hash(int hashCode) {
@@ -35,15 +33,18 @@ public class SimpleMap<K, V> implements Map<K, V> {
         return hash & (capacity - 1);
     }
 
+    private int getIndex(K key) {
+        return indexFor(hash(key == null ? 0 : key.hashCode()));
+    }
+
     private void expand() {
-        int capacityOriginal = capacity;
         MapEntry<K, V>[] tableOriginal = table;
         capacity *= 2;
-        count = 0;
         table = new MapEntry[capacity];
-        for (int i = 0; i < capacityOriginal; i++) {
+        for (int i = 0; i < tableOriginal.length; i++) {
             if (tableOriginal[i] != null) {
-                put(tableOriginal[i].key, tableOriginal[i].value);
+                int index = getIndex(tableOriginal[i].key);
+                table[index] = tableOriginal[i];
                 tableOriginal[i] = null;
             }
         }
@@ -51,9 +52,11 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public V get(K key) {
-        int hash = hash(key == null ? 0 : key.hashCode());
-        int index = indexFor(hash);
-        if (table[index] == null || table[index].key != key) {
+        int index = getIndex(key);
+        if (table[index] == null || key == null && table[index].key != null) {
+            return null;
+        }
+        if (key != table[index].key && !key.equals(table[index].key)) {
             return null;
         }
         return table[index].value;
@@ -61,20 +64,21 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean remove(K key) {
-        int hash = hash(key == null ? 0 : key.hashCode());
-        int index = indexFor(hash);
-        if (table[index] != null && table[index].key == key) {
-            table[index] = null;
-            count--;
-            return true;
+        int index = getIndex(key);
+        if (table[index] == null || key == null && table[index].key != null) {
+            return false;
         }
-        return false;
+        if (key != table[index].key && !key.equals(table[index].key)) {
+            return false;
+        }
+        table[index] = null;
+        count--;
+        return true;
     }
 
     @Override
     public Iterator<K> iterator() {
         return new Iterator<K>() {
-            MapEntry<K, V> entry;
             int modCount = count;
             int index = 0;
 
@@ -94,9 +98,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
                 if (!hasNext()) {
                     throw new NoSuchElementException();
                 }
-                entry = table[index];
-                index++;
-                return entry.key;
+                return table[index++].key;
             }
         };
 
