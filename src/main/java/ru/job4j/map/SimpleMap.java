@@ -8,20 +8,21 @@ public class SimpleMap<K, V> implements Map<K, V> {
 
     private static final float LOAD_FACTOR = 0.75f;
     private int capacity = 8;
-    private int count = 0;
+    private int modCount = 0;
     private MapEntry<K, V>[] table = new MapEntry[capacity];
 
     @Override
     public boolean put(K key, V value) {
-        if (count >= capacity * LOAD_FACTOR) {
+        if (modCount >= capacity * LOAD_FACTOR) {
             expand();
         }
+
         int index = getIndex(key);
         if (table[index] != null) {
             return false;
         }
         table[index] = new MapEntry<>(key, value);
-        count++;
+        modCount++;
         return true;
     }
 
@@ -53,10 +54,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
     @Override
     public V get(K key) {
         int index = getIndex(key);
-        if (table[index] == null || key == null && table[index].key != null) {
-            return null;
-        }
-        if (key != table[index].key && !key.equals(table[index].key)) {
+        if (ifAbsent(key, index)) {
             return null;
         }
         return table[index].value;
@@ -65,32 +63,33 @@ public class SimpleMap<K, V> implements Map<K, V> {
     @Override
     public boolean remove(K key) {
         int index = getIndex(key);
-        if (table[index] == null || key == null && table[index].key != null) {
-            return false;
-        }
-        if (key != table[index].key && !key.equals(table[index].key)) {
+        if (ifAbsent(key, index)) {
             return false;
         }
         table[index] = null;
-        count--;
+        modCount--;
         return true;
+    }
+
+    public boolean ifAbsent(K key, int index) {
+        return table[index] == null || (key == null && table[index].key != null) || key != table[index].key;
     }
 
     @Override
     public Iterator<K> iterator() {
         return new Iterator<K>() {
-            int modCount = count;
+            int originalCount = modCount;
             int index = 0;
 
             @Override
             public boolean hasNext() {
-                if (modCount != count) {
+                if (originalCount != modCount) {
                     throw new ConcurrentModificationException();
                 }
-                while (modCount != 0 && index < capacity && table[index] == null) {
+                while (originalCount != 0 && index < capacity && table[index] == null) {
                     index++;
                 }
-                return modCount != 0 && index < capacity;
+                return originalCount != 0 && index < capacity;
             }
 
             @Override
