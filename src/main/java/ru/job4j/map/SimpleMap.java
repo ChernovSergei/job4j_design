@@ -22,6 +22,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
         }
         table[index] = new MapEntry<>(key, value);
         count++;
+        modCount++;
         return true;
     }
 
@@ -67,34 +68,31 @@ public class SimpleMap<K, V> implements Map<K, V> {
         }
         table[index] = null;
         count--;
+        modCount--;
         return true;
     }
 
     public boolean ifAbsent(K key, int index) {
-        if (table[index] == null) {
-            return true;
-        }
-        if (key != null && table[index].key != null) {
-            return key.hashCode() != table[index].key.hashCode();
-        }
-        return key != table[index].key;
+        return Objects.isNull(table[index])
+                || !Objects.equals(Objects.hashCode(table[index].key), Objects.hashCode(key))
+                || !Objects.equals(table[index].key, key);
     }
 
     @Override
     public Iterator<K> iterator() {
-        modCount = count;
         return new Iterator<K>() {
+            int expectedModCount = modCount;
             int index = 0;
 
             @Override
             public boolean hasNext() {
-                if (modCount != count) {
+                if (modCount != expectedModCount) {
                     throw new ConcurrentModificationException();
                 }
-                while (modCount != 0 && index < capacity && table[index] == null) {
+                while (expectedModCount != 0 && index < capacity && table[index] == null) {
                     index++;
                 }
-                return modCount != 0 && index < capacity;
+                return expectedModCount != 0 && index < capacity;
             }
 
             @Override
