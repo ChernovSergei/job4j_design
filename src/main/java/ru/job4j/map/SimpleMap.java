@@ -1,19 +1,18 @@
 package ru.job4j.map;
 
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class SimpleMap<K, V> implements Map<K, V> {
 
     private static final float LOAD_FACTOR = 0.75f;
     private int capacity = 8;
+    private int count = 0;
     private int modCount = 0;
     private MapEntry<K, V>[] table = new MapEntry[capacity];
 
     @Override
     public boolean put(K key, V value) {
-        if (modCount >= capacity * LOAD_FACTOR) {
+        if (count >= capacity * LOAD_FACTOR) {
             expand();
         }
 
@@ -22,7 +21,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
             return false;
         }
         table[index] = new MapEntry<>(key, value);
-        modCount++;
+        count++;
         return true;
     }
 
@@ -67,29 +66,35 @@ public class SimpleMap<K, V> implements Map<K, V> {
             return false;
         }
         table[index] = null;
-        modCount--;
+        count--;
         return true;
     }
 
     public boolean ifAbsent(K key, int index) {
-        return table[index] == null || (key == null && table[index].key != null) || key != table[index].key;
+        if (table[index] == null) {
+            return true;
+        }
+        if (key != null && table[index].key != null) {
+            return key.hashCode() != table[index].key.hashCode() && key != table[index].key;
+        }
+        return table[index].key != null || key != null || table[index].value == null;
     }
 
     @Override
     public Iterator<K> iterator() {
+        modCount = count;
         return new Iterator<K>() {
-            int originalCount = modCount;
             int index = 0;
 
             @Override
             public boolean hasNext() {
-                if (originalCount != modCount) {
+                if (modCount != count) {
                     throw new ConcurrentModificationException();
                 }
-                while (originalCount != 0 && index < capacity && table[index] == null) {
+                while (modCount != 0 && index < capacity && table[index] == null) {
                     index++;
                 }
-                return originalCount != 0 && index < capacity;
+                return modCount != 0 && index < capacity;
             }
 
             @Override
