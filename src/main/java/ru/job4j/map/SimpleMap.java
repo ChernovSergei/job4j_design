@@ -75,9 +75,9 @@ public class SimpleMap<K, V> implements Map<K, V> {
             return true;
         }
         if (key != null && table[index].key != null) {
-            return key.hashCode() != table[index].key.hashCode() && key != table[index].key;
+            return key.hashCode() != table[index].key.hashCode();
         }
-        return table[index].key != null || key != null || table[index].value == null;
+        return key != table[index].key;
     }
 
     @Override
