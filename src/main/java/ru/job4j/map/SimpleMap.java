@@ -15,7 +15,6 @@ public class SimpleMap<K, V> implements Map<K, V> {
         if (count >= capacity * LOAD_FACTOR) {
             expand();
         }
-
         int index = getIndex(key);
         if (table[index] != null) {
             return false;
@@ -83,16 +82,15 @@ public class SimpleMap<K, V> implements Map<K, V> {
         return new Iterator<K>() {
             int expectedModCount = modCount;
             int index = 0;
-
             @Override
             public boolean hasNext() {
                 if (modCount != expectedModCount) {
                     throw new ConcurrentModificationException();
                 }
-                while (expectedModCount != 0 && index < capacity && table[index] == null) {
+                while (index < capacity && table[index] == null) {
                     index++;
                 }
-                return expectedModCount != 0 && index < capacity;
+                return index < capacity;
             }
 
             @Override
