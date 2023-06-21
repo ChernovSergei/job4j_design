@@ -16,13 +16,13 @@ public class SimpleMap<K, V> implements Map<K, V> {
             expand();
         }
         int index = getIndex(key);
-        if (table[index] != null) {
-            return false;
+        boolean result = table[index] == null;
+        if (result) {
+            table[index] = new MapEntry<>(key, value);
+            count++;
+            modCount++;
         }
-        table[index] = new MapEntry<>(key, value);
-        count++;
-        modCount++;
-        return true;
+        return result;
     }
 
     private int hash(int hashCode) {
@@ -38,43 +38,42 @@ public class SimpleMap<K, V> implements Map<K, V> {
     }
 
     private void expand() {
-        MapEntry<K, V>[] tableOriginal = table;
         capacity *= 2;
-        table = new MapEntry[capacity];
-        for (int i = 0; i < tableOriginal.length; i++) {
-            if (tableOriginal[i] != null) {
-                int index = getIndex(tableOriginal[i].key);
-                table[index] = tableOriginal[i];
-                tableOriginal[i] = null;
+        MapEntry<K, V>[] tmpTable = new MapEntry[capacity];
+        for (MapEntry<K, V> el : table) {
+            if (el != null) {
+                tmpTable[getIndex(el.key)] = el;
             }
         }
+        table = tmpTable;
     }
 
     @Override
     public V get(K key) {
         int index = getIndex(key);
-        if (ifAbsent(key, index)) {
-            return null;
+        V result = null;
+        if (ifPresent(key, index)) {
+            result = table[index].value;
         }
-        return table[index].value;
+        return result;
     }
 
     @Override
     public boolean remove(K key) {
         int index = getIndex(key);
-        if (ifAbsent(key, index)) {
-            return false;
+        boolean result = ifPresent(key, index);
+        if (result) {
+            table[index] = null;
+            count--;
+            modCount--;
         }
-        table[index] = null;
-        count--;
-        modCount--;
-        return true;
+        return result;
     }
 
-    public boolean ifAbsent(K key, int index) {
-        return Objects.isNull(table[index])
-                || !Objects.equals(Objects.hashCode(table[index].key), Objects.hashCode(key))
-                || !Objects.equals(table[index].key, key);
+    public boolean ifPresent(K key, int index) {
+        return !Objects.isNull(table[index])
+                && Objects.hashCode(table[index].key) == Objects.hashCode(key)
+                && Objects.equals(table[index].key, key);
     }
 
     @Override
