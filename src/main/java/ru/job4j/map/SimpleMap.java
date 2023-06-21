@@ -71,7 +71,7 @@ public class SimpleMap<K, V> implements Map<K, V> {
     }
 
     public boolean ifPresent(K key, int index) {
-        return !Objects.isNull(table[index])
+        return Objects.nonNull(table[index])
                 && Objects.hashCode(table[index].key) == Objects.hashCode(key)
                 && Objects.equals(table[index].key, key);
     }
