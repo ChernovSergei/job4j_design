@@ -18,9 +18,9 @@ public class LogFilter {
     public List<String> filter() {
         try (BufferedReader in = new BufferedReader(new FileReader(file))) {
             in.lines()
-                    .filter(S -> Stream.of(S.split(" "))
-                            .toArray()[Stream.of(S.split(" ")).toArray().length - 2]
-                            .equals("404"))
+                    .filter(S -> "404"
+                            .equals(Stream.of(S.split(" "))
+                            .toArray()[Stream.of(S.split(" ")).toArray().length - 2]))
                     .forEach(System.out::println);
         } catch (IOException e) {
             e.printStackTrace();
