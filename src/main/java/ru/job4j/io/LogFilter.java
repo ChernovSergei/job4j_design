@@ -33,7 +33,6 @@ public class LogFilter {
     public void saveTo(String out) {
         var data = filter();
         try (PrintWriter saving = new PrintWriter(new BufferedOutputStream(new FileOutputStream(out)))) {
-            //saving.println(data);
             data.forEach(S -> saving.printf("%s%n", S));
         } catch (IOException e) {
             e.printStackTrace();
