@@ -13,8 +13,8 @@ public class Analysis {
             boolean toggleRecord = true;
 
             while ((line = in.readLine()) != null) {
-                boolean equal400 = line.split(" ", 2)[0].equals("400");
-                boolean equal500 = line.split(" ", 2)[0].equals("500");
+                boolean equal400 = "400".equals(line.split(" ", 2)[0]);
+                boolean equal500 = "500".equals(line.split(" ", 2)[0]);
 
                 if (toggleRecord && (equal400 || equal500)) {
                     out.print(line.split(" ", 2)[1] + ";");
