@@ -17,11 +17,11 @@ public class Analysis {
                 boolean equal500 = "500".equals(line.split(" ", 2)[0]);
 
                 if (toggleRecord && (equal400 || equal500)) {
-                    out.print(line.split(" ", 2)[1] + ";");
+                    out.printf("%s;", line.split(" ", 2)[1]);
                     toggleRecord = false;
                 }
                 if (!toggleRecord && !equal400 && !equal500) {
-                    out.println(line.split(" ", 2)[1] + ";");
+                    out.printf("%s;%n", line.split(" ", 2)[1]);
                     toggleRecord = true;
                 }
             }
