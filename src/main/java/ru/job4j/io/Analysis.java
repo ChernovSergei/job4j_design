@@ -9,19 +9,22 @@ public class Analysis {
         try (BufferedReader in = new BufferedReader(new FileReader(source));
         PrintWriter out = new PrintWriter(new BufferedOutputStream(new FileOutputStream(target)))) {
 
-            Boolean[] recordToggle = new Boolean[1];
-            recordToggle[0] = true;
-            String[] ending = new String[2];
-            ending[0] = ";\n";
-            ending[1] = ";";
+            String line = "";
+            boolean toggleRecord = true;
 
-            in.lines()
-                    .filter(L -> recordToggle[0] && (L.split(" ", 2)[0].equals("400") || L.split(" ", 2)[0].equals("500"))
-                    || !recordToggle[0] && !L.split(" ", 2)[0].equals("400") && !L.split(" ", 2)[0].equals("500"))
-                    .forEach(L -> {
-                        out.print(L.split(" ", 2)[1] + ending[recordToggle[0] ? 1 : 0]);
-                        recordToggle[0] = !recordToggle[0];
-                    });
+            while ((line = in.readLine()) != null) {
+                boolean equal400 = line.split(" ", 2)[0].equals("400");
+                boolean equal500 = line.split(" ", 2)[0].equals("500");
+
+                if (toggleRecord && (equal400 || equal500)) {
+                    out.print(line.split(" ", 2)[1] + ";");
+                    toggleRecord = false;
+                }
+                if (!toggleRecord && !equal400 && !equal500) {
+                    out.println(line.split(" ", 2)[1] + ";");
+                    toggleRecord = true;
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
