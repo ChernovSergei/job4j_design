@@ -14,8 +14,18 @@ public class Search {
         return searcher.getPaths();
     }
 
+    public static void validateArgs(String path, String type) {
+        if (path == null) {
+            throw new IllegalArgumentException("ERROR: root path is null. Enter the root directory and reboot the app.");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("ERROR: file type is null. Enter the file type and reboot the app.");
+        }
+    }
+
     public static void main(String[] args) throws IOException {
-        Path start = Paths.get("C:\\projects\\job4j_tracker");
-        search(start, p -> p.toFile().getName().endsWith(".java")).forEach(System.out::println);
+        validateArgs(args[0], args[1]);
+        Path start = Paths.get(args[0]);
+        search(start, p -> p.toFile().getName().endsWith(args[1])).forEach(System.out::println);
     }
 }
