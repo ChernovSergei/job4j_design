@@ -14,17 +14,20 @@ public class Search {
         return searcher.getPaths();
     }
 
-    public static void validateArgs(String path, String type) {
-        if (path == null) {
-            throw new IllegalArgumentException("ERROR: root path is null. Enter the root directory and reboot the app.");
-        }
-        if (type == null) {
-            throw new IllegalArgumentException("ERROR: file type is null. Enter the file type and reboot the app.");
-        }
+    public static void validateArgs(String[] args) {
+       if (args.length != 2) {
+           throw new IllegalArgumentException("ERROR! Not enough input parameters. There should be two input parameters.");
+       }
+       if (!Files.isDirectory(Paths.get(args[0]))) {
+           throw new IllegalArgumentException("ERROR! First input isn't directory. First input has to be directory.");
+       }
+       if (!args[1].startsWith(".") || args[1].length() < 2) {
+           throw new IllegalArgumentException("ERROR! Second parameter isn't a file type. Correct second input");
+       }
     }
 
     public static void main(String[] args) throws IOException {
-        validateArgs(args[0], args[1]);
+        validateArgs(args);
         Path start = Paths.get(args[0]);
         search(start, p -> p.toFile().getName().endsWith(args[1])).forEach(System.out::println);
     }
