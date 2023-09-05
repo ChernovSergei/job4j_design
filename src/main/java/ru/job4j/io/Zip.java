@@ -41,21 +41,16 @@ public class Zip {
         }
     }
 
-    public List<File> getFiles(String startDirectory, String excludeObject) throws IOException {
+    public List<Path> getFiles(String startDirectory, String excludeObject) throws IOException {
         Predicate<Path> exclude = Predicate.not((Path p) -> p.toFile().getName().endsWith(excludeObject));
-        return Search.search(Paths.get(startDirectory), exclude)
-                .stream()
-                .map(Path::toFile)
-                .collect(Collectors.toList());
+        return Search.search(Paths.get(startDirectory), exclude);
     }
 
-    public void packFiles(List<File> sources, File target) {
-        Iterator<File> iterator = sources.listIterator();
+    public void packFiles(List<Path> sources, File target) {
         try (ZipOutputStream zip = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(target)))) {
-            while (iterator.hasNext()) {
-                File file = iterator.next();
-                zip.putNextEntry(new ZipEntry(file.getPath()));
-                try (BufferedInputStream out = new BufferedInputStream(new FileInputStream(file.getPath()))) {
+            for (Path path : sources) {
+                zip.putNextEntry(new ZipEntry(path.toString()));
+                try (BufferedInputStream out = new BufferedInputStream(new FileInputStream(path.toString()))) {
                     zip.write(out.readAllBytes());
                 }
             }
@@ -77,7 +72,7 @@ public class Zip {
 
     public static void main(String[] args) throws IOException {
         Zip myZip = Zip.of(args);
-        List<File> files = myZip.getFiles(myZip.directory, myZip.exclude);
-        myZip.packFiles(files, Paths.get(myZip.output).toFile());
+        List<Path> paths = myZip.getFiles(myZip.directory, myZip.exclude);
+        myZip.packFiles(paths, Paths.get(myZip.output).toFile());
     }
 }
