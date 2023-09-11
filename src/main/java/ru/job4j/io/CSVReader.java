@@ -12,7 +12,7 @@ public class CSVReader {
     private static Path out;
     private static Map<String, Integer> filters = new HashMap<>();
 
-    public static void handle(ArgsName argsName) throws Exception {
+    public static void handle(ArgsName argsName) {
         validateArgs(argsName);
         writeData(readData());
         clearArguments();
@@ -62,7 +62,7 @@ public class CSVReader {
                 }
             }
             resultRows.add(String.join(delimiter, resultRow));
-            Arrays.stream(resultRow).map(e -> e = "");
+            Arrays.fill(resultRow, null);
 
             while (rows.hasNextLine()) {
                 Scanner elements = new Scanner(rows.nextLine()).useDelimiter(delimiter);
@@ -75,7 +75,7 @@ public class CSVReader {
                     column++;
                 }
                 resultRows.add(String.join(delimiter, resultRow));
-                Arrays.stream(resultRow).map(e -> e = "");
+                Arrays.fill(resultRow, null);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,7 +88,7 @@ public class CSVReader {
         try (BufferedOutputStream outStream = new BufferedOutputStream(new FileOutputStream(out.toString()))) {
             for (String row : resultRows) {
                 outStream.write(row.getBytes());
-                outStream.write("\r\n".getBytes());
+                outStream.write(System.lineSeparator().getBytes());
             }
         } catch (IOException e) {
             e.printStackTrace();
