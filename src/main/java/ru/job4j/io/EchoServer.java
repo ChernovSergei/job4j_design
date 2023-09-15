@@ -3,9 +3,13 @@ package ru.job4j.io;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EchoServer {
-    public static void main(String[] args) throws IOException {
+    private static final Logger LOG = LoggerFactory.getLogger(UsageLog4j.class.getName());
+
+    public static void main(String[] args) {
         try (ServerSocket server = new ServerSocket(9000)) {
             while (!server.isClosed()) {
                 Socket socket = server.accept();
@@ -15,11 +19,11 @@ public class EchoServer {
                     out.write("HTTP/1.1 200 OK\r\n\r\n".getBytes());
                     String str = in.readLine();
                     System.out.println(str);
-                    if (str.contains("?msg=Bye")) {
-                        server.close();
-                    }
-                    if (!str.contains("?msg=Hello")) {
+                    if (str.contains("?msg=Hello")) {
                         out.write("Hello!".getBytes());
+                    }
+                    if (str.contains("?msg=Exit")) {
+                        server.close();
                     }
                     if (!str.contains("?msg=Exit") && !str.contains("?msg=Hello")) {
                         out.write("What?".getBytes());
@@ -27,6 +31,8 @@ public class EchoServer {
                     out.flush();
                 }
             }
+        } catch (IOException e) {
+            LOG.error("Server caused the error: ", e);
         }
     }
 }
