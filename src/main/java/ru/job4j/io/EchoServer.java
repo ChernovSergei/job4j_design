@@ -32,7 +32,7 @@ public class EchoServer {
                 }
             }
         } catch (IOException e) {
-            LOG.error("Server caused the error: ", e);
+            LOG.error("class EchoServer caused the error: ", e);
         }
     }
 }
