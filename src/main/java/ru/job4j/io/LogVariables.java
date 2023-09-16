@@ -8,7 +8,8 @@ public class LogVariables {
 
     public static void main(String[] args) {
         byte zero = 0;
-        Object[] vars = new Object[] {"Name", 18, 8F, 1L, 'C', 2D, true, zero};
+        short shorty = 23;
+        Object[] vars = new Object[] {18, 8F, 1L, 'C', 2D, true, zero, shorty};
         for (int i = 0; i < vars.length; i++) {
             LOG.debug("Var value = {}. Var type - {}", vars[i], vars[i].getClass());
     }
