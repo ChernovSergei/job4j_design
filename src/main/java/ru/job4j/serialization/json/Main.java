@@ -3,6 +3,7 @@ package ru.job4j.serialization.json;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import ru.job4j.serialization.java.Contact;
+import org.json.JSONObject;
 
 public class Main {
     public static void main(String[] args) {
@@ -28,5 +29,8 @@ public class Main {
                 + "}";
         final Cafeteria cafeteriaMod = gson.fromJson(cafeteriaJson, Cafeteria.class);
         System.out.println(cafeteriaMod);
+        System.out.println();
+        Cafeteria podium = new Cafeteria(1997, "Podium", new Contact(123654, "+90 434 5043"), false, new String[] {"Gogia", "Maka", "Kunduzai"});
+        System.out.println(new JSONObject(podium));
     }
 }
