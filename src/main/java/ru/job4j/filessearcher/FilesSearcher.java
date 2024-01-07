@@ -8,7 +8,6 @@ import java.nio.file.Path;
 public class FilesSearcher {
     public static void main(String[] args) throws IOException {
         IOConsole console = new OSConsole();
-        //IOConsole console = new IDEConsole();
         HashMap<String, String> userInput = console.getUserInput(args);
         if (userInput == null) {
             return;
