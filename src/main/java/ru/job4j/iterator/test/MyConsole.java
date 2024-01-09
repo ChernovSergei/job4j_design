@@ -1,4 +1,4 @@
-package ru.job4j.test;
+package ru.job4j.iterator.test;
 
  import java.io.Console;
 import java.util.Arrays;
