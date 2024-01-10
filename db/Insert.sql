@@ -1,1 +1,0 @@
-insert into engines_db(type, model, power) values('Turbine', 'Frame-5', '25000')
