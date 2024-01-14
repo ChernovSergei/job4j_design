@@ -1,25 +1,11 @@
-
-create table itemcomments(
+create table categories(
 	id serial primary key,
-	itemcomment text
+	category text
 );
 
-create table attachments(
+create table states(
 	id serial primary key,
-	attachment text
-);
-
-create table items(
-	id serial primary key,
-	item text,
-	comment_id int references itemcomments(id),
-	attach_id int references attachments(id)
-);
-
-create table users(
-	id serial primary key,
-	name text,
-	item_id int references items(id)
+	itemstate text
 );
 
 create table rules(
@@ -29,29 +15,49 @@ create table rules(
 
 create table roles(
 	id serial primary key,
+	name text
+);
+
+create table rolesAndRules(
+	id serial primary key,
+	rule_id int references rules(id),
+	role_id int references roles(id)
+);
+
+
+
+create table users(
+	id serial primary key,
 	name text,
+	role_id int references roles(id)
+);
+
+create table items(
+	id serial primary key,
+	item text,
 	user_id int references users(id),
-	rule_id int references rules(id)
+	category_id int references categories(id),
+	state_id int references states(id)
 );
 
-
-create table categories(
+create table itemcomments(
 	id serial primary key,
-	category text,
+	itemcomment text,
 	item_id int references items(id)
 );
 
-create table states(
+create table attachments(
 	id serial primary key,
-	itemstate text,
+	attachment text,
 	item_id int references items(id)
 );
 
-insert into attachments(attachment) values('Chair photo');
-insert into itemcomments(itemcomment) values('Leathern chair');
-insert into items(item, comment_id, attach_id) values('CEO chair', 1, 1);
-insert into categories(category, item_id) values('Furniture', 1);
-insert into states(itemstate, item_id) values('active', 1);
-insert into users(name, item_id) values('Greg Rojas', 1);
 insert into rules(rule) values('Manage a company');
-insert into roles(name, user_id, rule_id) values('CEO', 1, 1);
+insert into roles(name) values('CEO');
+insert into rolesAndRules(rule_id, role_id) values(1, 1);
+insert into users(name, role_id) values('Greg Rojas', 1);
+insert into categories(category) values('Furniture');
+insert into states(itemstate) values('active');
+insert into items(item, user_id, category_id, state_id) values('CEO chair', 1, 1, 1);
+insert into attachments(attachment, item_id) values('Chair photo', 1);
+insert into itemcomments(itemcomment, item_id) values('Leathern chair', 1);
