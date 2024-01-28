@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.StringJoiner;
 import java.sql.DriverManager;
-import java.io.FileReader;
+import java.io.InputStream;
 import java.sql.Statement;
 
 public class TableEditor implements AutoCloseable {
@@ -19,7 +19,7 @@ public class TableEditor implements AutoCloseable {
     }
 
     public void initConnection() throws Exception {
-        try (FileReader in = new FileReader("data/app.properties")) {
+        try (InputStream in = TableEditor.class.getClassLoader().getResourceAsStream("jdbc.properties")) {
             properties.load(in);
         }
         Class.forName(properties.getProperty("hibernate.connection.driver_class"));
@@ -50,7 +50,7 @@ public class TableEditor implements AutoCloseable {
     public void addColumn(String tableName, String columnName, String type) {
         try (Statement statement = connection.createStatement()) {
             String query = String.format("alter table %s add column if not exists %s %s", tableName, columnName, type);
-            statement.executeUpdate(query);
+            statement.execute(query);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -68,7 +68,7 @@ public class TableEditor implements AutoCloseable {
     public void renameColumn(String tableName, String columnName, String newColumnName) {
         try (Statement statement = connection.createStatement()) {
             String query = String.format("alter table %s rename column %s to %s", tableName, columnName, newColumnName);
-            statement.executeUpdate(query);
+            statement.execute(query);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
